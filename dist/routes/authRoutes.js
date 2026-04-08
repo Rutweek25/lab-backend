@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authController_1 = require("../controllers/authController");
+const securityMiddleware_1 = require("../middlewares/securityMiddleware");
+const router = (0, express_1.Router)();
+const authLimiter = (0, securityMiddleware_1.rateLimit)({ windowMs: 60000, max: 8, keyPrefix: "auth" });
+router.post("/register", authLimiter, authController_1.register);
+router.post("/verify-otp", authLimiter, authController_1.verifyRegistrationOtp);
+router.post("/resend-otp", authLimiter, authController_1.resendRegistrationOtp);
+router.post("/login", authLimiter, authController_1.login);
+exports.default = router;

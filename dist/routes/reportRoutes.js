@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const domain_1 = require("../types/domain");
+const reportController_1 = require("../controllers/reportController");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
+const upload_1 = require("../utils/upload");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.get("/download/:id", reportController_1.downloadReport);
+router.post("/", (0, authMiddleware_1.authorizeRole)("LAB"), upload_1.upload.single("report"), reportController_1.uploadReport);
+router.post("/:orderId", (0, authMiddleware_1.authorize)(domain_1.roles[1], domain_1.roles[2]), upload_1.upload.single("report"), reportController_1.uploadReport);
+router.get("/:orderId", reportController_1.listReports);
+router.patch("/:id/status", (0, authMiddleware_1.authorizeRole)("LAB"), reportController_1.updateReportStatus);
+exports.default = router;
