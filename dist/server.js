@@ -10,9 +10,26 @@ const app_1 = __importDefault(require("./app"));
 const env_1 = require("./config/env");
 const socket_1 = require("./config/socket");
 const server = http_1.default.createServer(app_1.default);
+const configuredOrigins = env_1.env.CLIENT_URL
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+const isAllowedOrigin = (origin) => {
+    if (!origin) {
+        return true;
+    }
+    return configuredOrigins.includes(origin) || localhostOriginPattern.test(origin);
+};
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: env_1.env.CLIENT_URL,
+        origin: (origin, callback) => {
+            if (isAllowedOrigin(origin)) {
+                callback(null, true);
+                return;
+            }
+            callback(new Error(`Socket CORS blocked for origin: ${origin || "unknown"}`));
+        },
         credentials: true
     }
 });

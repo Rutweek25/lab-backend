@@ -7,9 +7,31 @@ import { setSocketServer } from "./config/socket";
 
 const server = http.createServer(app);
 
+const configuredOrigins = env.CLIENT_URL
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+
+const isAllowedOrigin = (origin?: string) => {
+  if (!origin) {
+    return true;
+  }
+
+  return configuredOrigins.includes(origin) || localhostOriginPattern.test(origin);
+};
+
 const io = new Server(server, {
   cors: {
-    origin: env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Socket CORS blocked for origin: ${origin || "unknown"}`));
+    },
     credentials: true
   }
 });
