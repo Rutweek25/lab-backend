@@ -9,9 +9,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0",
-    "typeRoots": ["./node_modules/@types", "./src/types"]
-  },
+    "ignoreDeprecations": "6.0"
+  }
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
